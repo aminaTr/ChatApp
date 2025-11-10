@@ -20,8 +20,8 @@ A real-time audio chat application built with React, Node.js, Express, Socket.io
 - **Tailwind CSS** - Styling framework
 - **Socket.io Client** - Real-time communication
 - **WebRTC** - Peer-to-peer audio streaming
-- **Axios** - HTTP client for API calls
 - **React Hot Toast** - Notification system
+- **isomorphic-dompurify** - To clean incoming user inputs preventing injection attacks 
 
 ### Backend
 
@@ -203,4 +203,5 @@ This project is licensed under the ISC License.
 - User profiles and avatars
 - Admin panel for room management
 - Push notifications
+
 
