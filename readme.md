@@ -44,7 +44,7 @@ A real-time audio chat application built with React, Node.js, Express, Socket.io
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone [<repository-url>](https://github.com/aminaTr/ChatApp.git)
    cd audio-chat-app
    ```
 
@@ -203,3 +203,4 @@ This project is licensed under the ISC License.
 - User profiles and avatars
 - Admin panel for room management
 - Push notifications
+
