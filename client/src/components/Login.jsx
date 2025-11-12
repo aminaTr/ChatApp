@@ -2,6 +2,7 @@ import { useState } from "react";
 import { login, signup } from "../api/auth.js";
 import { createSocket } from "../socket/socket.js";
 import { ShipWheelIcon } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Login({ onLogin }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -15,14 +16,14 @@ export default function Login({ onLogin }) {
     e.preventDefault();
     try {
       let token, user;
-
       if (isSignup) {
-        // 🔹 Signup using your helper
+        // 🔹 Signup using helper
         ({ token, user } = await signup({ name, email, password }));
       } else {
-        // 🔹 Login using your helper
+        // 🔹 Login using helper
         ({ token, user } = await login({ email, password }));
       }
+      toast.success((isSignup ? "Signup" : "Login") + " successful!");
 
       // 🔹 Save session data
       localStorage.setItem("token", token);
@@ -32,19 +33,18 @@ export default function Login({ onLogin }) {
       socket.auth = { token };
       socket.connect();
       console.log("socket.connect(); called");
-
       // 🔹 Callback to parent
       onLogin(user);
-    } catch (err) {
-      console.error(err);
-      alert((isSignup ? "Signup" : "Login") + " failed: " + err.message);
+    } catch (error) {
+      console.error("in Login line 40", error);
+      // toast.error(
+      //   (isSignup ? "Signup" : "Login") + " failed! " + error.message
+      // );
+      setError(error.message);
     }
   }
   return (
-    <div
-      className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 bg-base-200 "
-      data-theme="light"
-    >
+    <div className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 bg-base-200 ">
       <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-3xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden">
         {/* LEFT: FORM */}
         <div className="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col">
@@ -151,7 +151,6 @@ export default function Login({ onLogin }) {
             </div>
           </form>
         </div>
-
         {/* RIGHT: Illustration / Info */}
         <div className="hidden lg:flex w-full lg:w-1/2 bg-primary/10 items-center justify-center">
           <div className="max-w-md p-8 text-center">
@@ -166,6 +165,7 @@ export default function Login({ onLogin }) {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

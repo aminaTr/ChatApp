@@ -1,0 +1,54 @@
+Architectural Overview of Chat Application
+
+This project is a real-time audio chat application designed to facilitate audio conversations in multiple rooms, with an accompanying text chat. It follows a full-stack architecture with separate frontend and backend layers, allowing for scalability and maintainability.
+
+1. Project Structure
+
+audio-chat-app/
+├── client/                 # React frontend (built with Vite)
+│   ├── src/
+│   │   ├── components/     # React UI components
+│   │   ├── context/        # React context providers for state management
+│   │   ├── socket/         # Socket.io client setup and event handling
+│   │   ├── webrtc/         # WebRTC peer connection logic
+│   │   ├── api/            # API service functions for server communication
+│   │   └── assets/         # Static assets (images, icons, etc.)
+│   ├── public/             # Public static files
+│   └── package.json
+├── server/                 # Node.js backend
+│   ├── config/             # Configuration files (env, cors, etc.)
+│   ├── core/               # Server setup and Socket.io management
+│   ├── middleware/         # Express middleware for auth, error handling
+│   ├── models/             # MongoDB models (Rooms, Users)
+│   ├── modules/            # Business logic modules (rooms, signaling)
+│   ├── routes/             # API routes
+│   ├── utils/              # Utility functions
+│   └── package.json
+├── .gitignore
+└── readme.md
+
+2. Key Architectural Decisions
+
+1.	Frontend (React + Vite + DaisyUI)
+	- Built using Vite for fast development and lightning-fast hot module replacement. Vite’s 		bundler is highly efficient, making iterative UI development smoother.
+	- DaisyUI was used for UI components to speed up development; however, due to time 	constraints, its effectiveness could not be fully utilized.
+	- Context API is used for managing global state such as lobby status, current room, user audio 	states, and participants.
+	- Responsive design is implemented using Tailwind CSS, though advanced UI/UX refinements 	remain for future updates.
+2.	Backend (Node.js + Express + Socket.IO)
+	- Express handles HTTP APIs for user management and room operations.
+	- Socket.IO manages real-time communication for chat messages, room updates, and audio 	signaling.
+	- The server keeps track of users by socket ID and user ID, enabling features like rejoining 	rooms after refresh.
+	- On the server side, I used isomorphic-dompurify library to clean incoming user inputs, 	preventing injection attacks and ensuring data integrity before saving to the database.
+	- Rooms and users are persisted in MongoDB.
+3.	Real-Time Audio Architecture
+	- WebRTC is used for peer-to-peer audio connections.
+	- The backend serves as a signaling server to negotiate connections and ICE candidates between 	participants.
+	- Implemented rejoin on refresh, allowing users to reconnect seamlessly without losing room 		state.
+4.	Current Limitations
+	- Time constraints prevented implementation of full validation checks, advanced UI, and lobby 		state management for multiple users.
+	- Features like managing users, room states, and access controls are planned for future 		updates.
+	- Scalability & Extensibility
+	- The project’s modular folder structure allows independent development of frontend and 		backend.
+	- Future improvements could include better lobby management, user presence indicators, and 		validation checks.
+
+

@@ -1,34 +1,31 @@
 import { RoomProvider } from "./context/RoomContext";
-import { useRoom } from "./context/RoomContext";
 import { useState } from "react";
 import Login from "./components/Login";
 import RoomManager from "./components/RoomManager";
-import "./App.css";
 import { UserRoundMinusIcon } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import ThemeController from "./components/ThemeController";
 
 export default function App() {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem("user");
-      return stored ? JSON.parse(stored) : null;
+      if (!stored || stored === "undefined" || stored === "null") return null;
+      return JSON.parse(stored);
     } catch (err) {
-      console.error(err);
+      console.error("Error parsing user:", err);
       return null;
     }
   });
-
-  if (!user) return <Login onLogin={setUser} />;
-
   return (
-    <RoomProvider user={user}>
-      <AppUI user={user} />
+    <RoomProvider user={user} setUser={setUser}>
+      <AppUI user={user} setUser={setUser} />
       <Toaster />
     </RoomProvider>
   );
 }
 
-function logOut() {
+function signOut() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   localStorage.removeItem("roomId");
@@ -36,35 +33,42 @@ function logOut() {
   window.location.reload();
 }
 
-function AppUI({ user }) {
-  const { logs } = useRoom();
+function AppUI({ user, setUser }) {
+  // const { logs } = useRoom();
 
   return (
-    <div className=" " data-theme="light">
-      <div className=" mx-2 px-4 mt-4">
-        {/* Header */}
-        <div className="flex items-center w-full justify-between bg-blue-200 p-4 rounded-lg shadow-md">
-          {/* App Name */}
-          <h1 className="text-4xl font-bold ">Audio Chat App</h1>
+    <div className=" min-h-screen bg-base-200 p-4">
+      {!user ? (
+        <Login onLogin={setUser} />
+      ) : (
+        <div className=" px-2 py-2">
+          {/* Header */}
+          <div className="flex items-center w-full justify-between p-2 rounded-lg shadow-md bg-base-100 border border-primary/25">
+            {/* App Name */}
+            <h1 className="text-2xl  ">Audio Chat App</h1>
 
-          {/* User Info + Logout */}
-          <div className="flex items-center space-x-4">
-            <div className="text-lg font-medium">
-              Hi {user?.displayName || "Guest"}!
+            {/* User Info + Logout */}
+            <div className="flex items-center space-x-4">
+              <ThemeController />
+              <div className="text-lg font-mono">
+                Hi{" "}
+                <span className="capitalize">
+                  {user?.displayName || "guest"}!
+                </span>
+              </div>
+              <button
+                onClick={signOut}
+                className="btn btn-accent text-sm  px-3 py-2 rounded-lg transition-colors"
+              >
+                <UserRoundMinusIcon className="inline-block w-4 h-4 mr-1" />
+                Sign Out
+              </button>
             </div>
-            <button
-              onClick={logOut}
-              className="bg-blue-500 hover:bg-blue-600 text-sm text-white px-3 py-2 rounded-lg transition-colors"
-            >
-              <UserRoundMinusIcon className="inline-block w-4 h-4 mr-1" />
-              Sign Out
-            </button>
           </div>
-        </div>
 
-        <RoomManager />
+          <RoomManager />
 
-        {/* <h3>Logs</h3>
+          {/* <h3>Logs</h3>
       <div
         style={{
           whiteSpace: "pre-wrap",
@@ -80,7 +84,8 @@ function AppUI({ user }) {
           <div key={i}>{l}</div>
         ))}
       </div> */}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

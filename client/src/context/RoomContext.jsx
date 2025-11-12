@@ -41,15 +41,21 @@ export function RoomProvider({ children, user }) {
 
   useEffect(() => {
     if (roomId) {
+      console.log("add room");
       localStorage.setItem("roomId", roomId);
+      console.log(localStorage.getItem("roomId"));
+      console.log(roomId);
     } else {
+      console.log("remove room");
       localStorage.removeItem("roomId");
+      console.log(localStorage.getItem("roomId"));
+      console.log(roomId);
     }
   }, [roomId]);
 
   useEffect(() => {
     if (inLobby) {
-      localStorage.setItem("inLobby", True);
+      localStorage.setItem("inLobby", true);
     } else {
       localStorage.removeItem("inLobby");
     }
@@ -243,6 +249,7 @@ export function RoomProvider({ children, user }) {
       } else if (response.status === "left") {
         log(`Left room: ${response.roomId}`);
         setRoomId("");
+        localStorage.removeItem("roomId");
         stopLocalAudio();
       }
     });

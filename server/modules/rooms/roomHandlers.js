@@ -115,14 +115,22 @@ socket.on("join-room", async ({ roomId }, callback) => {
 
 // --- Chat messages in room ---
 socket.on("send-message", async ({ roomId, message }) => {
-  if (!roomId || !message?.trim()) return;
+
+  if (!roomId || !message?.trim()) {
+    return socket.emit("message-send-error", { error: "Failed to send message" });}
+  if (message.length > 20) {
+    return socket.emit("message-send-error", { error: "Chat message must not be more than 20 characters" });
+  }
+
   const user = await User.findById(userId); 
   const username = user?.displayName;
   if (!username) return;
   try {
     // sanitize message
     const cleanMessage = DOMPurify.sanitize(message);
-
+    
+    if (!cleanMessage?.trim()) 
+    return socket.emit("message-send-error", { error: "Failed to send message" });
     // save to DB
     const savedMessage = await Message.create({
       roomId,
@@ -144,20 +152,9 @@ socket.on("send-message", async ({ roomId, message }) => {
     log(`💬 ${userId} → room ${roomId}: ${cleanMessage}`);
   } catch (err) {
     console.error("Failed to send message:", err);
-    socket.emit("error-message", { error: "Failed to send message" });
+    socket.emit("message-send-error", { error: "Failed to send message" });
   }
 });
 
 
-  // --- Chat messages in room ---
-  // socket.on("send-message", ({ roomId, message }) => {
-  //   if (!roomId || !message?.trim()) return;
-  //   io.to(roomId).emit("receive-message", {
-  //     userId,
-  //     message,
-  //     timestamp: Date.now(),
-  //   });
-
-  //   log(`💬 ${userId} → room ${roomId}: ${message}`);
-  // });
 }
