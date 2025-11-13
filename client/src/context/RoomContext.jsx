@@ -7,8 +7,9 @@ import {
   removeAllRemoteAudioElements,
 } from "../webrtc/audioManager.js";
 import { getRooms } from "../api/rooms.js";
-import { createRoom, makeRoomLive } from "../api/rooms.js";
+import { createRoom, makeRoomLive, authorizeRoomAccess } from "../api/rooms.js";
 import toast from "react-hot-toast";
+import { OctagonX } from "lucide-react";
 
 const RoomContext = createContext();
 
@@ -173,15 +174,15 @@ export function RoomProvider({ children, user }) {
 
   async function handleCreate(roomName, accessCode) {
     if (!roomName.trim()) return;
-    console.log(roomName, accessCode, token);
+    // console.log(roomName, accessCode, token);
     try {
       await createRoom(
         { name: roomName, isPrivate: !!accessCode, accessCode },
         token
       );
       loadRooms();
-    } catch (err) {
-      console.error("Failed to create room", err);
+    } catch (error) {
+      return toast.error(error);
     }
   }
 
@@ -202,23 +203,35 @@ export function RoomProvider({ children, user }) {
             const [value, setValue] = useState("");
 
             return (
-              <div className="flex flex-col gap-3 p-5 bg-white rounded-2xl shadow-md w-80 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 text-center">
+              <div className="relative flex flex-col gap-3 p-5 bg-base-200 rounded-2xl shadow-md w-80 border border-primary/50">
+                {/* Top-right cancel button */}
+                <OctagonX
+                  onClick={dismissToast}
+                  className="w-4 h-4 text-primary absolute 
+                      top-2 right-2 cursor-pointer 
+                      transition-transform duration-150
+                      hover:scale-110 
+                      active:scale-90"
+                />
+
+                <h3 className="text-lg font-semibold text-center">
                   Enter Access Code
                 </h3>
+
                 <input
                   type="text"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder="Access code"
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700"
+                  className="input"
                 />
+
                 <button
                   onClick={() => {
                     toast.dismiss();
                     resolve(value);
                   }}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition-colors"
+                  className="btn btn-primary"
                 >
                   Submit
                 </button>
@@ -226,14 +239,29 @@ export function RoomProvider({ children, user }) {
             );
           };
 
-          toast.custom((t) => <ToastInput />);
-        });
+          const toastId = toast.custom((t) => <ToastInput />, {
+            duration: Infinity, // stays forever until dismissed
+          });
 
-        if (code !== room.accessCode) {
-          toast.error("Incorrect access code");
+          const dismissToast = () => {
+            toast.dismiss();
+          };
+        });
+        const resp = await authorizeRoomAccess(
+          { roomId: room._id, accessCode: code },
+          token
+        );
+
+        if (!resp.success) {
+          toast.error(resp.message);
           return;
         }
       }
+      toast(
+        "Joining room " +
+          room?.name.charAt(0).toUpperCase() +
+          room?.name.slice(1)
+      );
       joinRoom(room._id);
     } catch (err) {
       console.error("Failed to join room", err);

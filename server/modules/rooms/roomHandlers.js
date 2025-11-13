@@ -118,8 +118,8 @@ socket.on("send-message", async ({ roomId, message }) => {
 
   if (!roomId || !message?.trim()) {
     return socket.emit("message-send-error", { error: "Failed to send message" });}
-  if (message.length > 20) {
-    return socket.emit("message-send-error", { error: "Chat message must not be more than 20 characters" });
+  if (message.length > 32) {
+    return socket.emit("message-send-error", { error: "Chat message must not be more than 32 characters" });
   }
 
   const user = await User.findById(userId); 

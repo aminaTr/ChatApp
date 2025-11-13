@@ -117,7 +117,7 @@ export default function RoomManager() {
       <div className="flex-1 m-2 relative flex flex-col">
         {/* Room Creation Form */}
         <div className="border border-primary/30 rounded-lg shadow-md p-4 mb-2 bg-base-100">
-          <h2 className="text-xl font-bold mb-2">Create Room</h2>
+          <h2 className="text-xl mb-2">Create Room</h2>
           <div className="flex flex-wrap items-center gap-2 w-full">
             {/* Room Name */}
             <input

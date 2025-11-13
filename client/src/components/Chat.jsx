@@ -49,7 +49,7 @@ export default function Chat() {
       <h3 className="text-lg mb-2 font-semibold">Side Chat</h3>
 
       {/* Messages Container */}
-      <div className="flex-1 flex flex-col gap-2 overflow-y-auto border border-base-300 rounded-lg bg-base-200 p-2 box-border">
+      <div className="flex-1 flex flex-col gap-2 overflow-y-auto border border-base-300 rounded-lg bg-base-200 p-2 box-border w-11/12">
         {messages.map((msg, i) => {
           const isOwn = msg.userId === user._id;
 
@@ -66,7 +66,7 @@ export default function Chat() {
                 } shadow-sm max-w-[95%]`}
               >
                 <span className="text-xs font-semibold">{msg.username}: </span>
-                <span className="text-sm">{msg.message}</span>
+                <span className="text-xs">{msg.message}</span>
               </div>
             </div>
           );
