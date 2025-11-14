@@ -156,9 +156,9 @@ export function RoomProvider({ children, user }) {
         toast(response.message);
       } else if (response.status === "joined") {
         toast(
-          "Joining room " +
-            response?.roomName.charAt(0).toUpperCase() +
-            response?.roomName.slice(1)
+          "Joining room "
+          // + response?.roomName.charAt(0).toUpperCase() +
+          //   response?.roomName.slice(1)
         );
         log(`Joined room: ${response.roomName}`);
         setRoomId(finalRoom);
