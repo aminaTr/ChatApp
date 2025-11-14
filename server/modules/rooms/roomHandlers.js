@@ -63,7 +63,7 @@ socket.on("join-room", async ({ roomId }, callback) => {
 
     // Notify other users in the room
     socket.emit("existing-participants", otherParticipants);
-    socket.to(roomId).emit("user-joined", { username });
+    socket.to(roomId).emit("user-joined", { userId, username });
     callback({ status: "joined", participants: otherParticipants, roomName:room.name });
 
     log(`✅ ${userId} joined room ${roomId}`);
