@@ -4,7 +4,7 @@ import { log } from "../../utils/logger.js";
 import Message from "../../models/Message.js";
 import DOMPurify from "isomorphic-dompurify"; // sanitize messages to prevent injection
 import User from "../../models/User.js";
-
+import { getUser } from "../../routes/auth.js";
 
 /**
  * Handles room join/leave/chat logic based on userId
@@ -59,11 +59,12 @@ socket.on("join-room", async ({ roomId }, callback) => {
     socket.currentRoom = roomId;
 
     const otherParticipants = room.participants.filter(id => id.toString() !== userId);
+    const username = await getUser(userId)
 
     // Notify other users in the room
     socket.emit("existing-participants", otherParticipants);
-    socket.to(roomId).emit("user-joined", { userId });
-    callback({ status: "joined", participants: otherParticipants });
+    socket.to(roomId).emit("user-joined", { username });
+    callback({ status: "joined", participants: otherParticipants, roomName:room.name });
 
     log(`✅ ${userId} joined room ${roomId}`);
 
@@ -71,7 +72,7 @@ socket.on("join-room", async ({ roomId }, callback) => {
     const messages = await Message.find({
       roomId,
     }).sort({ createdAt: 1 });
-
+    console.log('messages',messages)
     socket.emit("messages", messages.map(msg => ({
       _id: msg._id,
       roomId: msg.roomId,
@@ -98,10 +99,11 @@ socket.on("join-room", async ({ roomId }, callback) => {
       // Remove participant
       room.participants = room.participants.filter(id => id.toString() !== userId);
       await room.save();
+      const username = await getUser(userId)
 
       // Leave socket.io room
       socket.leave(roomId);
-      socket.to(roomId).emit("user-left", { userId });
+      socket.to(roomId).emit("user-left", { username, participants:room.participants });
 
       socket.currentRoom = null;
 

@@ -71,4 +71,17 @@ const isStrongPassword = (password) => {
   return re.test(password);
 };
 
+export const getUser = async (userId) => {
+  if (!userId) return null; // optional check
+
+  try {
+    const user = await User.findById(userId).select("displayName");
+    return user ? user.displayName : null;
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return null;
+  }
+};
+
+
 export default router;

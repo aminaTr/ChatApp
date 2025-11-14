@@ -18,7 +18,7 @@ export function createSocket(token) {
 
   // ✅ socket.id is only available after 'connect'
   socket.on("connect", () => {
-    console.log("Socket connected in client!  id:", socket.id, "token:", socket.auth.token);
+    console.log("Socket connected in client!  id:", socket.id);
   });
 
   return socket;
