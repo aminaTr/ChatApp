@@ -1,12 +1,16 @@
 // socket/ioInstance.js
-import { corsOptions } from "../config/cors.js";
+import { VITE_URL } from "../config/env.js";
 
 let io;
 
 export async function setIo (server) {
   const { Server } = await import("socket.io");
-  io = new Server(server, {
-    cors: corsOptions
+   io = new Server(server, {
+    cors: {
+      origin: [VITE_URL, "http://localhost:5173"], 
+      methods: ["GET", "POST"],
+      credentials: true
+    }
   });
   return io;
 }
