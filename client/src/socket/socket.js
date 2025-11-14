@@ -1,16 +1,13 @@
-// import { io } from "socket.io-client";
 
-// export const socket = io("http://localhost:5000", {
-//   autoConnect: true,
-// });
-// socket.js
 import { io } from "socket.io-client";
+
+const BACKEND_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 let socket;
 
 export function createSocket(token) {
   if (!socket) {
-    socket = io("http://localhost:5000", {
+    socket = io(BACKEND_URL, {
       auth: { token },
       autoConnect: true,
     });
