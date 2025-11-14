@@ -72,7 +72,7 @@ socket.on("join-room", async ({ roomId }, callback) => {
     const messages = await Message.find({
       roomId,
     }).sort({ createdAt: 1 });
-
+    console.log('messages',messages)
     socket.emit("messages", messages.map(msg => ({
       _id: msg._id,
       roomId: msg.roomId,

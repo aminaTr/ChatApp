@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { useRoom } from "../context/RoomContext";
 import { SendIcon } from "lucide-react";
-import { getSocket } from "../socket/socket";
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const { user, roomId, messages } = useRoom();
+  const { user, roomId, socket, messages } = useRoom();
 
   function sendMessage() {
-    const socket = getSocket();
     // console.log('input',input)
     if (!input.trim()) return;
     socket.emit("send-message", { roomId, user, message: input });

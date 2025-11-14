@@ -12,7 +12,7 @@ export function setupSignaling(log) {
     for (const remoteUserId of otherUserIds) {
       if (remoteUserId === socket.userId) continue;
 
-      console.log(`Creating peer connection to ${remoteUserId}`);
+      // log(`Creating peer connection to ${remoteUserId}`);
 
       const pc = createPeerConnection(remoteUserId, true);
 
@@ -26,7 +26,7 @@ export function setupSignaling(log) {
   // --- When someone new joins the room ---
   socket.on("user-joined", ({ userId }) => {
   if (!getPeer(userId)) {
-    console.log("Creating peer for new user: " + userId);
+    // log("Creating peer for new user: " + userId);
     createPeerConnection(userId, false);
   }
 });
@@ -34,7 +34,7 @@ export function setupSignaling(log) {
 
 // --- When you receive an offer ---
 socket.on("receive-offer", async ({ from, offer }) => {
-  console.log(`Received offer from ${from}`);
+  // log(`Received offer from ${from}`);
   let pc = getPeer(from);
   if (!pc) {
     // Create a peer if it doesn't exist yet
