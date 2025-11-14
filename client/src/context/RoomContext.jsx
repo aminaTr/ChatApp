@@ -337,6 +337,7 @@ export function RoomProvider({ children, user }) {
         rooms,
         token,
         user,
+        socket,
         messages,
         setRooms,
         log,
