@@ -2,6 +2,7 @@ const backendUrl = (import.meta.env.VITE_SOCKET_URL ||"http://localhost:5000")+"
 
 export async function login({ email, password }) {
   try {
+    console.log('backendUrl', backendUrl)
     const res = await fetch(`${backendUrl}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
