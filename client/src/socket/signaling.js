@@ -34,7 +34,7 @@ export function setupSignaling(log) {
 
 // --- When you receive an offer ---
 socket.on("receive-offer", async ({ from, offer }) => {
-  console.log(`Received offer from ${from}`);
+  // log(`Received offer from ${from}`);
   let pc = getPeer(from);
   if (!pc) {
     // Create a peer if it doesn't exist yet
