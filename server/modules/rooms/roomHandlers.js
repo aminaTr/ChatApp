@@ -103,7 +103,7 @@ socket.on("join-room", async ({ roomId }, callback) => {
 
       // Leave socket.io room
       socket.leave(roomId);
-      socket.to(roomId).emit("user-left", { username, participants:room.participants });
+      socket.to(roomId).emit("user-left", { userId, username, participants:room.participants });
 
       socket.currentRoom = null;
 
