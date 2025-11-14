@@ -330,6 +330,7 @@ export function RoomProvider({ children, user }) {
   return (
     <RoomContext.Provider
       value={{
+        socket,
         roomId,
         inLobby,
         logs,
