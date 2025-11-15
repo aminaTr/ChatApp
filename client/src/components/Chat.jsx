@@ -1,10 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRoom } from "../context/RoomContext";
+import { getSocket } from "../socket/socket";
 import { SendIcon } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Chat() {
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const { user, roomId, socket, messages } = useRoom();
+  const { user, roomId } = useRoom();
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const s = getSocket();
+    setSocket(s);
+  }, [getSocket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Handler for new messages
+    const handleNewMessage = (data) => setMessages((prev) => [...prev, data]);
+    socket.on("receive-message", handleNewMessage);
+
+    const handleMessageErrors = (response) => {
+      toast.error(response.error);
+    };
+
+    // Handler for messages emitted on join (chat history)
+    const handleMessagesOnJoin = (msgs) => setMessages(msgs);
+    socket.on("messages", handleMessagesOnJoin);
+    socket.on("message-send-error", handleMessageErrors);
+    return () => {
+      socket.off("receive-message", handleNewMessage);
+      socket.off("messages", handleMessagesOnJoin);
+      socket.off("message-send-error", handleMessageErrors);
+    };
+  }, [socket]);
 
   function sendMessage() {
     // console.log('input',input)

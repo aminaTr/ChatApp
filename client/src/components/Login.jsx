@@ -3,7 +3,6 @@ import { login, signup } from "../api/auth.js";
 import { createSocket } from "../socket/socket.js";
 import { ShipWheelIcon } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { useRoom } from "../context/RoomContext.jsx";
 
 export default function Login({ onLogin }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,7 +11,6 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
-  const { loadRooms, setToken } = useRoom();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,15 +31,15 @@ export default function Login({ onLogin }) {
       const socket = createSocket(token);
 
       socket.auth = { token };
-      setToken(token);
       socket.connect();
       console.log("socket.connect(); called");
-      loadRooms(token);
-      console.log("called load rooms");
       // 🔹 Callback to parent
       onLogin(user);
     } catch (error) {
       console.error("in Login line 40", error);
+      // toast.error(
+      //   (isSignup ? "Signup" : "Login") + " failed! " + error.message
+      // );
       setError(error.message);
     }
   }

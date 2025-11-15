@@ -23,41 +23,34 @@ export function RoomProvider({ children, user }) {
   );
   const [logs, setLogs] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [messages, setMessages] = useState([]);
-
   const [token, setToken] = useState(() => localStorage.getItem("token"));
+
   function log(msg) {
     setLogs((l) => [msg, ...l].slice(0, 100));
   }
   async function loadRooms(token) {
     try {
       if (!token) return;
+      console.log(token);
       const data = await getRooms(token);
+
       setRooms(data);
     } catch (err) {
       console.error("Failed to fetch rooms", err);
     }
   }
-  useEffect(() => {
-    if (!token) return;
-
-    async function fetchRooms() {
-      try {
-        const data = await getRooms(token);
-        setRooms(data);
-      } catch (err) {
-        console.error("Failed to fetch rooms", err);
-      }
-    }
-
-    fetchRooms();
-  }, [token]);
 
   useEffect(() => {
     if (roomId) {
+      console.log("add room");
       localStorage.setItem("roomId", roomId);
+      console.log(localStorage.getItem("roomId"));
+      console.log(roomId);
     } else {
+      console.log("remove room");
       localStorage.removeItem("roomId");
+      console.log(localStorage.getItem("roomId"));
+      console.log(roomId);
     }
   }, [roomId]);
 
@@ -71,15 +64,14 @@ export function RoomProvider({ children, user }) {
 
   // --- socket init ---
   useEffect(() => {
-    if (!user || !token || rooms.length === 0) return;
-
+    if (!user) return;
+    if (!token) return;
     loadRooms(token);
-
     const s = createSocket(token);
     setSocket(s);
 
     s.on("connect", () => {
-      // log("Connected: " + s.id);
+      log("Connected: " + s.id);
       if (roomId) {
         console.log("Rejoining saved room:", roomId);
         rejoinRoom(roomId, s);
@@ -87,8 +79,8 @@ export function RoomProvider({ children, user }) {
     });
 
     s.on("disconnect", () => log("Disconnected"));
-    s.on("user-joined", (d) => log("User joined: " + d.username));
-    s.on("user-left", (d) => log("User left: " + d.username));
+    s.on("user-joined", (d) => log("User joined: " + d.userId));
+    s.on("user-left", (d) => log("User left: " + d.userId));
     s.on("force-disconnect", ({ reason }) => {
       toast.error(reason);
       s.disconnect();
@@ -115,21 +107,9 @@ export function RoomProvider({ children, user }) {
         return [...prevRooms, newRoom];
       });
     });
-    const handleNewMessage = (data) => setMessages((prev) => [...prev, data]);
-    s.on("receive-message", handleNewMessage);
-
-    const handleMessageErrors = (response) => {
-      toast.error(response.error);
-    };
-
-    const handleMessagesOnJoin = (msgs) => {
-      setMessages(msgs);
-    };
-    s.on("messages", handleMessagesOnJoin);
-    s.on("message-send-error", handleMessageErrors);
 
     return () => s.off();
-  }, [user, rooms, token]);
+  }, [user, inLobby]);
 
   function getCurrentRoom() {
     const room = rooms.find((r) => r._id === roomId);
@@ -149,23 +129,21 @@ export function RoomProvider({ children, user }) {
 
     socket.emit("join-room", { roomId: finalRoom }, (response) => {
       if (response.status === "error") {
-        // log("Server: " + response.message);
+        log("Server: " + response.message);
         toast.error(response.message);
       } else if (response.status === "lobby") {
         log("Server (lobby): " + response.message);
         toast(response.message);
       } else if (response.status === "joined") {
-        toast(
-          "Joining room " +
-            response?.roomName.charAt(0).toUpperCase() +
-            response?.roomName.slice(1)
+        log(`Joined room: ${finalRoom}`);
+        log(
+          "Existing participants: " + (response.participants || []).join(", ")
         );
-        log(`Joined room: ${response.roomName}`);
         setRoomId(finalRoom);
       }
     });
   }
-  // console.log("logs;", logs);
+
   async function rejoinRoom(targetRoomId, s) {
     if (!s || !s.connected) return log("Socket not ready yet!");
     const finalRoom = targetRoomId;
@@ -179,13 +157,16 @@ export function RoomProvider({ children, user }) {
 
     s.emit("join-room", { roomId: finalRoom }, (response) => {
       if (response.status === "error") {
-        // log("Server: " + response.message);
+        log("Server: " + response.message);
         toast.error(response.message);
       } else if (response.status === "lobby") {
         log("Server (lobby): " + response.message);
         toast(response.message);
       } else if (response.status === "joined") {
-        log(`Joined room: ${response.roomName}`);
+        log(`Joined room: ${finalRoom}`);
+        log(
+          "Existing participants: " + (response.participants || []).join(", ")
+        );
         setRoomId(finalRoom);
       }
     });
@@ -193,6 +174,7 @@ export function RoomProvider({ children, user }) {
 
   async function handleCreate(roomName, accessCode) {
     if (!roomName.trim()) return;
+    // console.log(roomName, accessCode, token);
     try {
       await createRoom(
         { name: roomName, isPrivate: !!accessCode, accessCode },
@@ -275,7 +257,11 @@ export function RoomProvider({ children, user }) {
           return;
         }
       }
-
+      toast(
+        "Joining room " +
+          room?.name.charAt(0).toUpperCase() +
+          room?.name.slice(1)
+      );
       joinRoom(room._id);
     } catch (err) {
       console.error("Failed to join room", err);
@@ -337,8 +323,6 @@ export function RoomProvider({ children, user }) {
         rooms,
         token,
         user,
-        socket,
-        messages,
         setRooms,
         log,
         joinRoom,
@@ -347,8 +331,6 @@ export function RoomProvider({ children, user }) {
         handleCreate,
         handleMakeLive,
         getCurrentRoom,
-        loadRooms,
-        setToken,
       }}
     >
       {children}

@@ -17,7 +17,6 @@ const roomSchema = new mongoose.Schema({
 // Hash access code before saving
 roomSchema.pre("save", async function(next) {
   if (!this.isModified("accessCode")) return next();
-  if (!this.accessCode) return next();
   const salt = await bcrypt.genSalt(10);
   this.accessCode = await bcrypt.hash(this.accessCode, salt);
   next();

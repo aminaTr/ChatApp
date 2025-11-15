@@ -9,7 +9,6 @@ import {
   Circle,
   RadioIcon,
   KeySquareIcon,
-  MessageSquareWarningIcon,
 } from "lucide-react";
 import Chat from "./Chat.jsx";
 
@@ -23,8 +22,6 @@ export default function RoomManager() {
     leaveRoom,
     handleMakeLive,
     getCurrentRoom,
-    logs,
-    inLobby,
   } = useRoom();
 
   const [muted, setMuted] = useState(true);
@@ -179,6 +176,7 @@ export default function RoomManager() {
                     <div className="badge badge-outline border-blue-400 text-blue-500 p-3">
                       <MapPin size={18} />
                     </div>
+
                     {/* Room Title */}
                     <h3 className="text-xl font-semibold ">
                       <span className="badge badge-primary badge-lg font-medium capitalize shadow-md">
@@ -186,6 +184,8 @@ export default function RoomManager() {
                       </span>
                     </h3>
                   </div>
+
+                  {/* Right: Optional status or users */}
                   <div className="flex items-center gap-4">
                     {/* Room Visibility Badge */}
                     <div
@@ -204,13 +204,7 @@ export default function RoomManager() {
                     </div>
                   </div>
                 </div>
-                {logs.length > 0 && (
-                  <div className="flex justify-center items-start w-full h-full">
-                    <div className="alert alert-info shadow-lg">
-                      <div className="text-center">{logs[0]}</div>
-                    </div>
-                  </div>
-                )}
+
                 <div className="flex justify-center gap-3 mt-4 flex-wrap">
                   {/* Mute / Unmute Button */}
                   <button
@@ -243,19 +237,8 @@ export default function RoomManager() {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-primary">
-            <p className="text-3xl font-bold">
-              {inLobby ? "Currently in Lobby" : "Join a room to start.."}
-            </p>
-
-            {inLobby && (
-              <div className="flex items-center gap-1 mt-2 text-sm text-error">
-                <MessageSquareWarningIcon size={16} />
-                <span>
-                  You will lose your lobby status if you join another room.
-                </span>
-              </div>
-            )}
+          <div className="flex-1 flex items-center justify-center text-3xl font-semibold text-primary">
+            Join a room to start..
           </div>
         )}
       </div>
