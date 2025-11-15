@@ -135,6 +135,7 @@ export function RoomProvider({ children, user }) {
         log("Server (lobby): " + response.message);
         toast(response.message);
       } else if (response.status === "joined") {
+        toast("Joining room..");
         log(`Joined room: ${finalRoom}`);
         log(
           "Existing participants: " + (response.participants || []).join(", ")
@@ -257,11 +258,7 @@ export function RoomProvider({ children, user }) {
           return;
         }
       }
-      toast(
-        "Joining room " +
-          room?.name.charAt(0).toUpperCase() +
-          room?.name.slice(1)
-      );
+
       joinRoom(room._id);
     } catch (err) {
       console.error("Failed to join room", err);

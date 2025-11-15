@@ -17,6 +17,7 @@ export default function RoomManager() {
     user,
     rooms,
     roomId,
+    inLobby,
     handleCreate,
     handleJoin,
     leaveRoom,
@@ -235,6 +236,13 @@ export default function RoomManager() {
                 <Chat />
               </div>
             </div>
+          </div>
+        ) : inLobby ? (
+          <div className="flex items-center gap-1 mt-2 text-sm text-error">
+            <MessageSquareWarningIcon size={16} />
+            <span>
+              You will lose your lobby status if you join another room.
+            </span>
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center text-3xl font-semibold text-primary">
