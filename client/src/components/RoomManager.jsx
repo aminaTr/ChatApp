@@ -238,16 +238,20 @@ export default function RoomManager() {
               </div>
             </div>
           </div>
-        ) : inLobby ? (
-          <div className="flex items-center gap-1 mt-2 text-sm text-error">
-            <MessageSquareWarningIcon size={16} />
-            <span>
-              You will lose your lobby status if you join another room.
-            </span>
-          </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-3xl font-semibold text-primary">
-            Join a room to start..
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="text-3xl font-semibold text-primary">
+              {inLobby ? "Currently in Lobby" : "Join a room to start.."}
+            </div>
+
+            {inLobby && (
+              <div className="flex items-center gap-1 mt-2 text-sm text-error">
+                <MessageSquareWarningIcon size={16} />
+                <span>
+                  You will lose your lobby status if you join another room.
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
