@@ -9,6 +9,7 @@ import {
   Circle,
   RadioIcon,
   KeySquareIcon,
+  MessageSquareWarningIcon,
 } from "lucide-react";
 import Chat from "./Chat.jsx";
 
